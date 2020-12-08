@@ -1,5 +1,9 @@
 
 from competencia import Competencia
+from datos import Datos
+import db
+from sqlalchemy import and_, or_
+
 
 
 class Carrera():
@@ -43,14 +47,102 @@ class Carrera():
                 Competencia(nroID, nombre, apellido, marca, sexo, vueltas))
 
 
-    def mostrarRegistros(self):
-        print("\n")
+    def guardarDatos(self):
         print(f"""
-                ╔═══════════════════════════════════╗
-                ║  LISTADO DE PARTICIPANTE (｡◕‿◕｡)  ║
-                ╚═══════════════════════════════════╝
-            """)
+                    ╔══════════════════════════╗
+                    ║      GUARDAR EN BASE     ║
+                    ╚══════════════════════════╝
+                """)
 
-        for d in self.listaTiempos:
-            d.mostrarTiempo()
-        print("\n")
+        db.Base.metadata.create_all(db.engine)
+
+        for corredor in self.listaTiempos:
+            nroID = corredor.nroID
+            nombre = corredor.nombre
+            apellido = corredor.apellido
+            marca = corredor.marca
+            sexo = corredor.sexo
+            primerVuelta = corredor.tiempos[0][0]
+            segundoVuelta = corredor.tiempos[0][1]
+            mejorVuelta = corredor.mejorTiempo
+            promedio = corredor.promedio
+
+            registro = Datos(nroID, nombre, apellido, marca, sexo,
+                             primerVuelta, segundoVuelta, mejorVuelta, promedio)
+            db.session.add(registro)
+            db.session.commit()
+
+        print(f"""
+                    ╔══════════════════════════╗
+                    ║   ...Datos Guardado      ║
+                    ╚══════════════════════════╝
+                """)
+
+
+    def consultarDB(self):
+        print(f"""
+                    ╔══════════════════════════════╗
+                    ║    MOSTRAR DATOS DE BASE     ║
+                    ╚══════════════════════════════╝
+                """)
+
+        # SELECT * FROM datos;
+        for d in db.session.query(Datos).all():
+            print(d)
+
+    def mostrarPosicion(self):
+        print(f"""
+                    ╔════════════════════════════╗
+                    ║      MOSTRAR POSICION      ║
+                    ╚════════════════════════════╝
+                """)
+
+        
+        query_obj = db.session.query(Datos)
+        order_by_query = query_obj.order_by(Datos.mejorVuelta)
+
+        for result in order_by_query:
+            print(result)
+         
+
+    def mostrarUltimo(self):
+        print(f"""
+                    ╔════════════════════════════╗
+                    ║      MOSTRAR ULTIMO        ║
+                    ╚════════════════════════════╝
+                """)
+
+        
+        query_obj = db.session.query(Datos)
+        order_by_query = query_obj.order_by(Datos.mejorVuelta.desc()).limit(1)
+
+        for result in order_by_query:
+            print(result)
+
+    def mostrarCantidad(self):
+        print(f"""
+                    ╔══════════════════════════════╗
+                    ║  MOSTRAR CANT PARTICIPANTES  ║
+                    ╚══════════════════════════════╝
+                """)
+
+
+        d = db.session.query(Datos).count()
+        print("Formaron parte de la competencia: ")
+        print(d) 
+
+    
+    def mostrarPeor(self):
+        print(f"""
+                    ╔════════════════════════════╗
+                    ║      MOSTRAR ULTIMO        ║
+                    ╚════════════════════════════╝
+                """)
+
+        
+        query_obj = db.session.query(Datos)
+        order_by_query = query_obj.order_by(Datos.mejorVuelta.desc()).limit(1)
+
+        for result in order_by_query:
+            print(result)
+
