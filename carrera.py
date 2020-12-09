@@ -135,14 +135,44 @@ class Carrera():
     def mostrarPeor(self):
         print(f"""
                     ╔════════════════════════════╗
-                    ║      MOSTRAR ULTIMO        ║
+                    ║    MOSTRAR PEOR TIEMPO     ║
                     ╚════════════════════════════╝
                 """)
 
         
         query_obj = db.session.query(Datos)
-        order_by_query = query_obj.order_by(Datos.mejorVuelta.desc()).limit(1)
+        order_by_query = query_obj.order_by(Datos.promedio.desc()).limit(1)
+
 
         for result in order_by_query:
             print(result)
 
+    def crearCSV(self):
+        
+        archivo = input("Ingrese el nombre de salida para el CSV: ")
+        datos = []
+        for d in db.session.query(Datos).all():
+            datos.append("\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\"\n"
+                         .format(
+                             d.nroID,
+                             d.nombre,
+                             d.apellido,
+                             d.marca,
+                             d.sexo,
+                             d.primerVuelta,
+                             d.segundoVuelta,
+                             d.mejorVuelta,
+                             d.promedio))
+
+        with open(f"{archivo}.csv", 'w') as f:
+            f.write("\"nroID\",\"nombre\",\"apellido\",\"marca\",\"sexo\",\"vuelta 1\",\"vuelta 2\",\"mejorVuelta\",\"promedio\"\n")
+            for dd in datos:
+                f.write(dd)
+
+        print(f"""
+                    ╔════════════════════════╗
+                    ║       CSV GENERADO     ║
+                    ╚════════════════════════╝
+                """)
+            
+                

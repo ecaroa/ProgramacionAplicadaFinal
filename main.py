@@ -8,7 +8,7 @@ def main():
 
     carrera = Carrera()
 
-    while opcion != 10:
+    while opcion != 8:
 
         if opcion == 1:
             clear()
@@ -35,10 +35,16 @@ def main():
         if opcion == 6:
             clear()
             carrera.mostrarPeor()
+        
+        if opcion == 7:
+            clear()
+            carrera.crearCSV()
 
 
         MostrarMenu()
         opcion = int(input("Ingrese opción: "))
+
+    print(" Adios!, gracias!")
 
 
 def clear():
@@ -57,6 +63,7 @@ def MostrarMenu():
     print("5.  Mostrar cuantos participaron")
     print("6.  Mostrar peor tiempo")
     print("7.  Guardar en CSV")
+    print("8.  SALIR")
 
 if __name__ == "__main__":
     main()
